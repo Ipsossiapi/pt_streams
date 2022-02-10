@@ -17,3 +17,11 @@ variable "RUN_REGION" {
 variable "VERSION" {
   type = string
 }
+
+variable "CODE_STORAGE_NAME" {
+  type = string
+}
+
+variable "ARCHIVE_PATH" {
+  type = string
+}

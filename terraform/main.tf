@@ -25,4 +25,5 @@ locals {
     "roles/logging.logWriter",
     "roles/pubsub.publisher",
   ]
+  ARCHIVE_NAME = "pt-streams"
 }

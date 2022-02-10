@@ -8,8 +8,8 @@ resource "google_service_account" "subscriber" {
 }
 
 resource "google_iap_web_type_app_engine_iam_member" "member" {
-  project = google_app_engine_application.default.project
-  app_id  = google_app_engine_application.default.app_id
+  project = google_app_engine_standard_app_version.default.project
+  app_id  = google_app_engine_standard_app_version.default.id
   role    = "roles/iap.httpsResourceAccessor" # == iap web app user
   member  = "serviceAccount:${google_service_account.subscriber.email}"
 }

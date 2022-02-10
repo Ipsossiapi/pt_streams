@@ -1,6 +1,6 @@
 # https://www.terraform.io/docs/providers/google/r/google_service_account.html
 resource "google_service_account" "default" {
-  account_id = "ae-${var.ENV_CODE}-${var.SERVICE_NAME}"
+  account_id = "ae-${var.ENV_CODE}-${local.SERVICE_NAME}"
 }
 
 # https://www.terraform.io/docs/providers/google/r/google_service_account_iam.html
