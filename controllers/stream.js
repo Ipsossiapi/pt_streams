@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require('fs');
+const url = require('url');
 const { pipeline } = require('stream');
 const axios = require("axios").default;
 const axiosRetry = require("axios-retry");
@@ -51,41 +52,31 @@ async function streamTweetsHttp() {
 
   var options = {
     host: config.pt_stream_host,
+    // baseUrl: 'https://' + config.pt_stream_host,
     port: 443,
-    path: config.pt_stream_path,
-    keepAlive: true,
+    path: url.parse(url.format({
+      pathname: config.pt_stream_path,
+      query: {
+        ['tweet.fields']: 'context_annotations',
+        expansions: 'author_id'
+      },
+    })).path,
+    // url: config.pt_stream_path,
+    // keepAlive: true,
     headers: {
-      'Authorization': 'Basic ' + new Buffer(config.gnip_username + ':' + config.gnip_password).toString('base64')
+      // 'Authorization': 'Basic ' + new Buffer(config.gnip_username + ':' + config.gnip_password).toString('base64')
+      'Authorization': `Bearer ${process.env.TWITTER_API_BEARER_TOKEN}`
     }
   };
+  // const url = `${options.baseUrl}${options.url}`
+  console.log(options);
   request = https.get(options, function (res) {
     console.log('streaming with HTTP .. ', config.app_name);
     var body = '';
     res.on('data', function (data) {
-      // our stream will only emit a single JSON root node.
-      var splited_payload = '';
-      //console.log('got data: ', data.toString(),'---------\n');
-      var json_payload = data.toString();
-      if (json_payload) {
-        try {
-          JSON.parse(json_payload);
-          pub_sub_svcs.publishMessage(config.gcp_topicName, JSON.stringify(json_payload));
-        } catch (e) {
-          //console.log('Error -- ',e.message);
-          if (json_payload[0] === undefined || json_payload[0] === '\r' || json_payload[0] === '' || json_payload[0] === '\n') {
-            console.log('~~~ Heartbeat payload ~~~ ');
-          } else {
-            if (splited_payload.length > 0) {
-              splited_payload.append(json_payload);
-              pub_sub_svcs.publishMessage(JSON.stringify(splited_payload));
-              console.log('splited_payload ', JSON.parse(splited_payload));
-              splited_payload = '';
-            }
-            else
-              splited_payload = json_payload;
-          }
-        }
-      }
+      var tweet_json = JSON.parse(data.toString());
+      console.log(Object.keys(tweet_json.data));
+      // pub_sub_svcs.publishMessage(JSON.stringify(tweet_json));
     });
     res.on('end', function () {
       //here we have the full response, html or json object

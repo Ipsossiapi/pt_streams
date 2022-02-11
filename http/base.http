@@ -1,0 +1,7 @@
+@HOST = http://localhost:4020/stream
+
+GET {{HOST}}
+
+### Poll
+
+GET {{HOST}}/poll/6/60000

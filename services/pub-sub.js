@@ -1,5 +1,5 @@
-const {PubSub} = require('@google-cloud/pubsub');
-const {v1} = require('@google-cloud/pubsub');
+const { PubSub } = require('@google-cloud/pubsub');
+const { v1 } = require('@google-cloud/pubsub');
 const { insertResults } = require('./bq');
 const config = require('../config.js');
 
@@ -19,32 +19,32 @@ async function publishMessage(topicName, message) {
   }
 }
 
-const timeout = 60;
+// const timeout = 60;
 
-async function listenForMessages(subscriptionName) {
-  // References an existing subscription
-  const subscription = pubSubClient.subscription(subscriptionName);
+// async function listenForMessages(subscriptionName) {
+//   // References an existing subscription
+//   const subscription = pubSubClient.subscription(subscriptionName);
 
-  // Create an event handler to handle messages
-  let messageCount = 0;
-  const messageHandler = message => {
-    console.log(`Received message ${message.id}:`);
-    //console.log(`\tData: ${message.data}`);
-    //console.log(`\tAttributes: ${message.attributes}`);
-    messageCount += 1;
+//   // Create an event handler to handle messages
+//   let messageCount = 0;
+//   const messageHandler = message => {
+//     console.log(`Received message ${message.id}:`);
+//     //console.log(`\tData: ${message.data}`);
+//     //console.log(`\tAttributes: ${message.attributes}`);
+//     messageCount += 1;
 
-    // "Ack" (acknowledge receipt of) the message
-    message.ack();
-  };
+//     // "Ack" (acknowledge receipt of) the message
+//     message.ack();
+//   };
 
-  // Listen for new messages until timeout is hit
-  subscription.on('message', messageHandler);
+//   // Listen for new messages until timeout is hit
+//   subscription.on('message', messageHandler);
 
-  setTimeout(() => {
-    subscription.removeListener('message', messageHandler);
-    console.log(`${messageCount} message(s) received.`);
-  }, timeout * 100000);
-}
+//   setTimeout(() => {
+//     subscription.removeListener('message', messageHandler);
+//     console.log(`${messageCount} message(s) received.`);
+//   }, timeout * 100000);
+// }
 
 // Creates a client; cache this for further use.
 const subClient = new v1.SubscriberClient();
@@ -71,21 +71,21 @@ async function synchronousPull(projectId, subscriptionName, maxMessagesToPull) {
 
   for (const message of response.receivedMessages) {
     //console.log('Received Message :- ',message.message.data.toString());
-    tweets.push(JSON.parse(message.message.data.toString()));
+    tweets.push(JSON.parse(message.message.data.toString()));  // one message == one tweet
     ackIds.push(message.ackId);
   }
 
-  console.log(config.app_name,' Tweets pulled -- ',tweets.length);
-  if( tweets.length == 0 )
+  console.log(config.app_name, ' Tweets pulled -- ', tweets.length);
+  if (tweets.length == 0)
     counter++;
-  if( counter > config.reconnectCounter )  {
+  if (counter > config.reconnectCounter) {
     counter = 0;
     return new Promise(function (resolve, reject) {
       resolve('disconnect')
     });
   }
   // Insert into BQ
-  await insertResults(tweets,config.app_name);
+  await insertResults(tweets, config.app_name);
 
   if (ackIds.length !== 0) {
     // Acknowledge all of the messages. You could also ackknowledge
@@ -99,5 +99,8 @@ async function synchronousPull(projectId, subscriptionName, maxMessagesToPull) {
   }
 }
 
-module.exports = { publishMessage, listenForMessages, synchronousPull };
-
+module.exports = {
+  publishMessage,
+  // listenForMessages,
+  synchronousPull,
+};
