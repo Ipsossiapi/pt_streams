@@ -1,0 +1,9 @@
+@HOST = http://localhost:4020/stream
+
+### Start streaming
+
+GET {{HOST}}
+
+### Poll Pubsub queue (6 queries over 10000 ms)
+
+GET {{HOST}}/poll/6/10000
