@@ -48,14 +48,14 @@ router.get("/poll/:frequency/:delay", function (req, res) {
 });
 
 async function streamTweetsHttp() {
-
+  // console.log('streamTweetsHttp');
   var options = {
     host: config.pt_stream_host,
     port: 443,
     path: config.pt_stream_path,
     keepAlive: true,
     headers: {
-      'Authorization': 'Basic ' + new Buffer(config.gnip_username + ':' + config.gnip_password).toString('base64')
+      'Authorization': 'Basic ' + new Buffer.from(config.gnip_username + ':' + config.gnip_password, 'utf8').toString('base64')
     }
   };
   request = https.get(options, function (res) {
@@ -69,7 +69,9 @@ async function streamTweetsHttp() {
       if (json_payload) {
         try {
           JSON.parse(json_payload);
-          pub_sub_svcs.publishMessage(config.gcp_topicName, JSON.stringify(json_payload));
+          let tweet = JSON.stringify(json_payload);
+          pub_sub_svcs.publishMessage(config.gcp_topicName, tweet);
+          // console.log('published tweet');
         } catch (e) {
           //console.log('Error -- ',e.message);
           if (json_payload[0] === undefined || json_payload[0] === '\r' || json_payload[0] === '' || json_payload[0] === '\n') {
