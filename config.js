@@ -5,8 +5,8 @@ const config = {
     gcp_topicName: process.env.TOPIC_NAME,
     gcp_subscriptionName: process.env.SUBSCRIPTION_NAME,
 
-    messageCount: 1000,  // how many max messages to pull at a time on poll
-    reconnectCounter: 100,  // regenerate connection after X messages read
+    messageCount: 10000,  // how many max messages to pull at a time on poll
+    reconnectCounter: 100000,  // regenerate connection after X messages read
 
     pt_stream_host: process.env.TWITTER_API_HOST,
     pt_stream_path: process.env.TWITTER_API_PATH,

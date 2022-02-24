@@ -48,6 +48,7 @@ router.get("/poll/:frequency/:delay", function (req, res) {
 });
 
 async function streamTweetsHttp() {
+  return;
   // console.log('streamTweetsHttp');
   var options = {
     host: config.pt_stream_host,
