@@ -42,3 +42,5 @@ terraform.rc
 */terraform/*.json
 
 config.js
+
+**/node_modules
